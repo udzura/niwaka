@@ -88,8 +88,30 @@ go build -o niwaka
 ./niwaka
 
 # カスタム設定ファイルを指定
-./niwaka /path/to/custom-config.yaml
+./niwaka -config /path/to/custom-config.yaml
+
+# CLIオプションで設定を上書き
+./niwaka -port 9090 -cache-dir /tmp/cache -max-cache-files 2000
+
+# GCS設定をCLIオプションで指定
+./niwaka -project-id my-project -credentials-file /path/to/key.json
+
+# ヘルプを表示
+./niwaka -help
 ```
+
+#### CLIオプション
+
+| オプション | 説明 | デフォルト |
+|-----------|------|-----------|
+| `-config` | 設定ファイルのパス | `config.yaml` |
+| `-port` | サーバーポート | 設定ファイルの値を使用 |
+| `-cache-dir` | キャッシュディレクトリ | 設定ファイルの値を使用 |
+| `-max-cache-files` | 最大キャッシュファイル数 | 設定ファイルの値を使用 |
+| `-project-id` | GCSプロジェクトID | 設定ファイル > 環境変数の順 |
+| `-credentials-file` | GCS認証ファイル | 設定ファイル > 環境変数の順 |
+
+CLIオプションは設定ファイルの値を上書きし、環境変数よりも優先されます。
 
 ## キャッシュ管理
 

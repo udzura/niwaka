@@ -1,9 +1,9 @@
 package main
 
 import (
-	"testing"
 	"image"
 	"image/color"
+	"testing"
 )
 
 func TestParseSize(t *testing.T) {
@@ -49,7 +49,7 @@ func TestResizeImage(t *testing.T) {
 	// 50x50にリサイズ
 	resized := resizeImage(src, 50, 50)
 	bounds := resized.Bounds()
-	
+
 	if bounds.Max.X != 50 || bounds.Max.Y != 50 {
 		t.Errorf("Expected resized image to be 50x50, but got %dx%d", bounds.Max.X, bounds.Max.Y)
 	}

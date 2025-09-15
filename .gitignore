@@ -1,0 +1,48 @@
+# バイナリファイル
+niwaka
+*.exe
+*.dll
+*.so
+*.dylib
+
+# テストバイナリファイル
+*.test
+
+# カバレッジファイル
+*.out
+*.prof
+
+# キャッシュディレクトリ
+cache/
+test_cache/
+
+# 依存関係ディレクトリ
+vendor/
+
+# IDEファイル
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ログファイル
+*.log
+
+# 環境変数ファイル
+.env
+.env.local
+.env.production
+
+# 一時ファイル
+tmp/
+temp/

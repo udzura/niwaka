@@ -1,0 +1,23 @@
+assortments:
+  avatar:
+    large: 1000x1000
+    medium: 300x300
+    small: 100x100
+  emoji:
+    medium: 30x30
+    mini: 15x15
+  thumbnail:
+    large: 400x400
+    medium: 200x200
+    small: 50x50
+
+# サーバ設定
+server:
+  port: 8080
+  cache_dir: "./cache"
+  max_cache_files: 1000
+
+# GCS設定
+gcs:
+  project_id: ""  # 環境変数から取得
+  credentials_file: ""  # 環境変数から取得

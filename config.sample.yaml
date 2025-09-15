@@ -1,0 +1,37 @@
+assortments:
+  # ユーザーアバター用
+  avatar:
+    xlarge: 2000x2000
+    large: 1000x1000
+    medium: 300x300
+    small: 100x100
+    thumbnail: 50x50
+  
+  # 絵文字・アイコン用
+  emoji:
+    large: 64x64
+    medium: 30x30
+    mini: 15x15
+  
+  # サムネイル用  
+  thumbnail:
+    large: 400x400
+    medium: 200x200
+    small: 100x100
+  
+  # バナー・ヘッダー用
+  banner:
+    full: 1920x480
+    medium: 1280x320
+    small: 640x160
+
+# サーバ設定
+server:
+  port: 8080
+  cache_dir: "./cache"
+  max_cache_files: 1000
+
+# GCS設定（環境変数から取得）
+gcs:
+  project_id: ""  # GOOGLE_CLOUD_PROJECT から取得
+  credentials_file: ""  # GOOGLE_APPLICATION_CREDENTIALS から取得

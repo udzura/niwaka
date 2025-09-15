@@ -256,7 +256,7 @@ func NewServer(options *CLIOptions) (*Server, error) {
 		// サービスアカウントキーファイルを使用
 		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", config.GCS.CredentialsFile)
 	}
-	
+
 	gcsClient, err = storage.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GCS client: %w", err)
@@ -395,14 +395,14 @@ func (s *Server) Start() error {
 func main() {
 	// CLIオプションを定義
 	options := &CLIOptions{}
-	
+
 	flag.StringVar(&options.ConfigPath, "config", "config.yaml", "Path to config file")
 	flag.IntVar(&options.Port, "port", 0, "Server port (overrides config)")
 	flag.StringVar(&options.CacheDir, "cache-dir", "", "Cache directory (overrides config)")
 	flag.IntVar(&options.MaxCacheFiles, "max-cache-files", 0, "Maximum number of cache files (overrides config)")
 	flag.StringVar(&options.ProjectID, "project-id", "", "GCS project ID (overrides config and env)")
 	flag.StringVar(&options.CredentialsFile, "credentials-file", "", "GCS credentials file path (overrides config and env)")
-	
+
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\nGCS Image Resize Server\n\n")
@@ -412,7 +412,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  GOOGLE_CLOUD_PROJECT        GCS project ID\n")
 		fmt.Fprintf(os.Stderr, "  GOOGLE_APPLICATION_CREDENTIALS  Path to GCS credentials file\n")
 	}
-	
+
 	flag.Parse()
 
 	server, err := NewServer(options)

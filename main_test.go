@@ -3,7 +3,10 @@ package main
 import (
 	"image"
 	"image/color"
+	"os"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestParseSize(t *testing.T) {
@@ -91,5 +94,98 @@ func TestCacheManager(t *testing.T) {
 	_, found = cm.Get("nonexistent_key")
 	if found {
 		t.Error("Expected not to find nonexistent key, but found")
+	}
+}
+
+func TestResolveBucketName(t *testing.T) {
+	// テスト用の設定を作成
+	config := &Config{
+		Buckets: map[string]string{
+			"images":  "my-company-prod-images-bucket",
+			"assets":  "my-company-prod-assets-bucket",
+			"uploads": "my-company-user-uploads-bucket",
+		},
+	}
+
+	server := &Server{
+		config: config,
+	}
+
+	tests := []struct {
+		alias       string
+		expected    string
+		expectError bool
+	}{
+		{"images", "my-company-prod-images-bucket", false},
+		{"assets", "my-company-prod-assets-bucket", false},
+		{"uploads", "my-company-user-uploads-bucket", false},
+		{"nonexistent", "", true},
+		{"", "", true},
+	}
+
+	for _, test := range tests {
+		result, err := server.resolveBucketName(test.alias)
+		if test.expectError {
+			if err == nil {
+				t.Errorf("Expected error for alias %s, but got none", test.alias)
+			}
+		} else {
+			if err != nil {
+				t.Errorf("Unexpected error for alias %s: %v", test.alias, err)
+			}
+			if result != test.expected {
+				t.Errorf("Expected %s for alias %s, but got %s", test.expected, test.alias, result)
+			}
+		}
+	}
+}
+
+func TestConfigLoad(t *testing.T) {
+	// テスト用の一時設定ファイルを作成
+	configContent := `buckets:
+  test: "test-bucket"
+  demo: "demo-bucket"
+assortments:
+  avatar:
+    large: 1000x1000
+    medium: 300x300
+server:
+  port: 8080
+  cache_dir: "./cache"
+  max_cache_files: 1000
+gcs:
+  project_id: "test-project"
+  credentials_file: ""`
+
+	// 一時ファイルに書き込み
+	tempFile := "./test_config.yaml"
+	err := os.WriteFile(tempFile, []byte(configContent), 0644)
+	if err != nil {
+		t.Fatalf("Failed to create test config file: %v", err)
+	}
+	defer os.Remove(tempFile)
+
+	// 設定読み込みテスト
+	configData, err := os.ReadFile(tempFile)
+	if err != nil {
+		t.Fatalf("Failed to read config: %v", err)
+	}
+
+	var config Config
+	if err := yaml.Unmarshal(configData, &config); err != nil {
+		t.Fatalf("Failed to parse config: %v", err)
+	}
+
+	// 検証
+	if len(config.Buckets) != 2 {
+		t.Errorf("Expected 2 bucket aliases, but got %d", len(config.Buckets))
+	}
+
+	if config.Buckets["test"] != "test-bucket" {
+		t.Errorf("Expected bucket 'test' to resolve to 'test-bucket', but got %s", config.Buckets["test"])
+	}
+
+	if config.Server.Port != 8080 {
+		t.Errorf("Expected port to be 8080, but got %d", config.Server.Port)
 	}
 }

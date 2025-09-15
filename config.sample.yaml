@@ -1,3 +1,11 @@
+# バケットエイリアス設定
+buckets:
+  # エイリアス名: 実際のGCSバケット名
+  images: "my-company-prod-images-bucket"
+  assets: "my-company-prod-assets-bucket"
+  uploads: "my-company-user-uploads-bucket"
+  media: "my-company-media-storage"
+
 assortments:
   # ユーザーアバター用
   avatar:

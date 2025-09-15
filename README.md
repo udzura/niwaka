@@ -6,18 +6,19 @@ GoでGCS (Google Cloud Storage) の画像を取得してリサイズして表示
 
 - **Pure Go実装**: cgoを使用しない純Goライブラリのみ使用
 - **設定ベース**: YAMLファイルでサイズセット（assortments）を管理
+- **バケットエイリアス**: 実際のGCSバケット名を隠すエイリアス機能
 - **ファイルキャッシュ**: LRU方式でキャッシュを管理、設定可能な最大ファイル数
 - **標準ライブラリ**: Goの標準ライブラリ（image/jpeg, image/png）を使用した画像処理
 
 ## API
 
 ```
-GET /${bucket_name}/${assortment_name}/${full_object_key_including_ext}/${size}.${ext}
+GET /${bucket_alias}/${assortment_name}/${full_object_key_including_ext}/${size}.${ext}
 ```
 
 ### パラメータ
 
-- `bucket_name`: GCSバケット名
+- `bucket_alias`: バケットエイリアス名（設定ファイルで定義）
 - `assortment_name`: 設定ファイルで定義されたサイズセット名
 - `full_object_key_including_ext`: GCSオブジェクトキー（拡張子を含む）
 - `size`: assortmentで定義されたサイズ名
@@ -26,11 +27,11 @@ GET /${bucket_name}/${assortment_name}/${full_object_key_including_ext}/${size}.
 ### 例
 
 ```bash
-# avatar assortmentのlarge サイズで画像を取得
-GET /my-bucket/avatar/images/user/profile.jpg/large.jpg
+# avatar assortmentのlarge サイズで画像を取得（imagesエイリアスを使用）
+GET /images/avatar/user/profile.jpg/large.jpg
 
-# emoji assortmentのmedium サイズで画像を取得  
-GET /my-bucket/emoji/icons/smile.png/medium.png
+# emoji assortmentのmedium サイズで画像を取得（assetsエイリアスを使用）
+GET /assets/emoji/icons/smile.png/medium.png
 ```
 
 ## 設定
@@ -38,6 +39,12 @@ GET /my-bucket/emoji/icons/smile.png/medium.png
 `config.yaml`ファイルで設定を行います：
 
 ```yaml
+# バケットエイリアス設定（実際のバケット名を隠す）
+buckets:
+  images: "my-company-prod-images-bucket"
+  assets: "my-company-prod-assets-bucket" 
+  uploads: "my-company-user-uploads-bucket"
+
 assortments:
   avatar:
     large: 1000x1000

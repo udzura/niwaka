@@ -26,6 +26,7 @@ import (
 
 // 設定構造体
 type Config struct {
+	Buckets     map[string]string            `yaml:"buckets"`
 	Assortments map[string]map[string]string `yaml:"assortments"`
 	Server      ServerConfig                 `yaml:"server"`
 	GCS         GCSConfig                    `yaml:"gcs"`
@@ -120,6 +121,14 @@ func resizeImage(src image.Image, width, height int) image.Image {
 	}
 
 	return dst
+}
+
+// バケット名解決関数
+func (s *Server) resolveBucketName(bucketAlias string) (string, error) {
+	if actualBucket, exists := s.config.Buckets[bucketAlias]; exists {
+		return actualBucket, nil
+	}
+	return "", fmt.Errorf("unknown bucket alias: %s", bucketAlias)
 }
 
 // キャッシュマネージャー
@@ -280,8 +289,15 @@ func (s *Server) handleImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bucket := pathParts[0]
+	bucketAlias := pathParts[0]
 	assortment := pathParts[1]
+
+	// バケットエイリアスを実際のバケット名に変換
+	actualBucket, err := s.resolveBucketName(bucketAlias)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid bucket alias: %s", bucketAlias), http.StatusBadRequest)
+		return
+	}
 
 	// object_keyは複数のパートを持つ可能性がある
 	objectKeyParts := pathParts[2 : len(pathParts)-1]
@@ -317,8 +333,8 @@ func (s *Server) handleImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// キャッシュキー生成
-	cacheKey := s.cacheManager.getCacheKey(bucket, objectKey, assortment, sizeName, ext)
+	// キャッシュキー生成（エイリアス名を使用してキャッシュキーの一意性を保つ）
+	cacheKey := s.cacheManager.getCacheKey(bucketAlias, objectKey, assortment, sizeName, ext)
 
 	// キャッシュチェック
 	if cachedData, found := s.cacheManager.Get(cacheKey); found {
@@ -327,9 +343,9 @@ func (s *Server) handleImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// GCSから画像を取得
+	// GCSから画像を取得（実際のバケット名を使用）
 	ctx := context.Background()
-	obj := s.gcsClient.Bucket(bucket).Object(objectKey)
+	obj := s.gcsClient.Bucket(actualBucket).Object(objectKey)
 	reader, err := obj.NewReader(ctx)
 	if err != nil {
 		http.Error(w, "Failed to read object from GCS", http.StatusNotFound)

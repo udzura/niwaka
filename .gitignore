@@ -11,6 +11,12 @@ niwaka
 # カバレッジファイル
 *.out
 *.prof
+coverage.out
+
+# テスト用一時ファイル
+test_config.yaml
+bench_cache/
+bench_lru_cache/
 
 # キャッシュディレクトリ
 cache/

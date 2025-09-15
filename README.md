@@ -46,15 +46,6 @@ assortments:
   emoji:
     medium: 30x30
     mini: 15x15
-
-server:
-  port: 8080
-  cache_dir: "./cache"
-  max_cache_files: 1000
-
-gcs:
-  project_id: ""  # 環境変数から取得
-  credentials_file: ""  # 環境変数から取得
 ```
 
 ## セットアップ
